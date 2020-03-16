@@ -1,4 +1,5 @@
 from threading import RLock
+from collections import deque
 
 from rx.core.typing import Disposable
 
@@ -7,11 +8,13 @@ class CompositeDisposable(Disposable):
     """Represents a group of disposable resources that are disposed
     together"""
 
+    __slots__ = ['disposable', 'is_disposed', 'current', 'lock']
+
     def __init__(self, *args):
         if args and isinstance(args[0], list):
-            self.disposable = args[0]
+            self.disposable = deque(args[0])
         else:
-            self.disposable = list(args)
+            self.disposable = deque(list(args))
 
         self.is_disposed = False
         self.lock = RLock()
@@ -62,7 +65,7 @@ class CompositeDisposable(Disposable):
         with self.lock:
             self.is_disposed = True
             current_disposable = self.disposable
-            self.disposable = []
+            self.disposable = deque()
 
         for disp in current_disposable:
             disp.dispose()
@@ -74,7 +77,7 @@ class CompositeDisposable(Disposable):
 
         with self.lock:
             current_disposable = self.disposable
-            self.disposable = []
+            self.disposable = deque()
 
         for disposable in current_disposable:
             disposable.dispose()
@@ -92,7 +95,7 @@ class CompositeDisposable(Disposable):
         return item in self.disposable
 
     def to_list(self):
-        return self.disposable[:]
+        return list(self.disposable)
 
     def __len__(self):
         return len(self.disposable)

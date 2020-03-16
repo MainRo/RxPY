@@ -7,9 +7,9 @@ from rx.core.typing import Mapper, MapperIndexed
 from rx.internal.utils import is_future
 
 
-def _flat_map_internal(source, mapper=None, mapper_indexed=None):
+def _flat_map_internal_mapper_indexed(source, mapper_indexed=None):
     def projection(x, i):
-        mapper_result = mapper(x) if mapper else mapper_indexed(x, i)
+        mapper_result = mapper_indexed(x, i)
         if is_future(mapper_result):
             result = from_future(mapper_result)
         elif isinstance(mapper_result, collections.abc.Iterable):
@@ -22,6 +22,33 @@ def _flat_map_internal(source, mapper=None, mapper_indexed=None):
         ops.map_indexed(projection),
         ops.merge_all()
     )
+
+
+def _flat_map_internal_mapper(source, mapper=None):
+    def projection(x):
+        return mapper(x)
+        '''
+        mapper_result = mapper(x)
+        if is_future(mapper_result):
+            result = from_future(mapper_result)
+        elif isinstance(mapper_result, collections.abc.Iterable):
+            result = from_(mapper_result)
+        else:
+            result = mapper_result
+        return result
+        '''
+
+    return source.pipe(
+        ops.map(projection),
+        ops.merge_all()
+    )
+
+
+def _flat_map_internal(source, mapper=None, mapper_indexed=None):
+    if mapper is not None:
+        return _flat_map_internal_mapper(source, mapper)
+    else:
+        return _flat_map_internal_mapper_indexed(source, mapper_indexed)
 
 
 def _flat_map(mapper: Optional[Mapper] = None) -> Callable[[Observable], Observable]:

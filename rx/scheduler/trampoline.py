@@ -40,7 +40,7 @@ class Trampoline(object):
             with self._lock:
                 while len(self._queue) > 0:
                     item: ScheduledItem = self._queue.peek()
-                    if item.duetime <= item.scheduler.now:
+                    if item.duetime is None or item.duetime <= item.scheduler.now:
                         self._queue.dequeue()
                         ready.append(item)
                     else:
@@ -55,6 +55,7 @@ class Trampoline(object):
                 if len(self._queue) == 0:
                     break
                 item = self._queue.peek()
-                seconds = (item.duetime - item.scheduler.now).total_seconds()
-                if seconds > 0.0:
-                    self._condition.wait(seconds)
+                if item.duetime is not None:
+                    seconds = (item.duetime - item.scheduler.now).total_seconds()
+                    if seconds > 0.0:
+                        self._condition.wait(seconds)

@@ -47,7 +47,7 @@ class TrampolineScheduler(Scheduler):
             (best effort).
         """
 
-        return self.schedule_absolute(self.now, action, state=state)
+        return self.schedule_absolute(None, action, state=state)
 
     def schedule_relative(self,
                           duetime: typing.RelativeTime,
@@ -86,9 +86,12 @@ class TrampolineScheduler(Scheduler):
             (best effort).
         """
 
-        dt = self.to_datetime(duetime)
-        if dt > self.now:
-            log.warning('Do not schedule blocking work!')
+        if duetime is None:
+            dt = None
+        else:
+            dt = self.to_datetime(duetime)
+            if dt > self.now:
+                log.warning('Do not schedule blocking work!')
         item: ScheduledItem = ScheduledItem(self, state, action, dt)
 
         self.get_trampoline().run(item)
