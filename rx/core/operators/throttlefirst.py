@@ -29,10 +29,9 @@ def _throttle_first(window_duration: typing.RelativeTime, scheduler: Optional[ty
                 emit = False
                 now = _scheduler.now
 
-                with source.lock:
-                    if not last_on_next[0] or now - last_on_next[0] >= duration:
-                        last_on_next[0] = now
-                        emit = True
+                if not last_on_next[0] or now - last_on_next[0] >= duration:
+                    last_on_next[0] = now
+                    emit = True
                 if emit:
                     observer.on_next(x)
 

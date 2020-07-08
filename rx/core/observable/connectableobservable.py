@@ -19,17 +19,18 @@ class ConnectableObservable(Observable):
     def _subscribe_core(self, observer, scheduler=None):
         return self.subject.subscribe(observer, scheduler=scheduler)
 
+    def _dispose(self):
+        self.has_subscription = False
+        self.subscription = None
+
     def connect(self, scheduler=None):
         """Connects the observable."""
 
         if not self.has_subscription:
             self.has_subscription = True
 
-            def dispose():
-                self.has_subscription = False
-
             subscription = self.source.subscribe(self.subject, scheduler=scheduler)
-            self.subscription = CompositeDisposable(subscription, Disposable(dispose))
+            self.subscription = CompositeDisposable(subscription, Disposable(self._dispose))
 
         return self.subscription
 

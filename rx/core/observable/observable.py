@@ -20,6 +20,8 @@ G = TypeVar('G')
 
 
 class Observable(typing.Observable):
+    #__slots__ = ('_subscribe', 'lock')
+
     """Observable base class.
 
     Represents a push-style collection, which you can :func:`pipe <pipe>` into
@@ -34,7 +36,7 @@ class Observable(typing.Observable):
         """
         super().__init__()
 
-        self.lock = threading.RLock()
+        #self.lock = threading.RLock()
         self._subscribe = subscribe
 
     def _subscribe_core(self,
@@ -128,6 +130,7 @@ class Observable(typing.Observable):
             """Fixes subscriber to make sure it returns a Disposable instead
             of None or a dispose function"""
             if not hasattr(subscriber, 'dispose'):
+                print("BAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
                 subscriber = Disposable(subscriber)
 
             return subscriber

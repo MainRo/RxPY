@@ -31,9 +31,8 @@ def _switch_latest() -> Callable[[Observable], Observable]:
                 nonlocal source
 
                 d = SingleAssignmentDisposable()
-                with source.lock:
-                    latest[0] += 1
-                    _id = latest[0]
+                latest[0] += 1
+                _id = latest[0]
                 has_latest[0] = True
                 inner_subscription.disposable = d
 

@@ -13,11 +13,10 @@ def _element_at_or_default(index, has_default=False, default_value=None):
 
             def on_next(x):
                 found = False
-                with source.lock:
-                    if i[0]:
-                        i[0] -= 1
-                    else:
-                        found = True
+                if i[0]:
+                    i[0] -= 1
+                else:
+                    found = True
 
                 if found:
                     observer.on_next(x)

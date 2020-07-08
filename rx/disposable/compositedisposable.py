@@ -1,5 +1,3 @@
-from threading import RLock
-
 from rx.core.typing import Disposable
 
 
@@ -14,7 +12,6 @@ class CompositeDisposable(Disposable):
             self.disposable = list(args)
 
         self.is_disposed = False
-        self.lock = RLock()
         super(CompositeDisposable, self).__init__()
 
     def add(self, item):
@@ -25,11 +22,10 @@ class CompositeDisposable(Disposable):
             item: Disposable to add."""
 
         should_dispose = False
-        with self.lock:
-            if self.is_disposed:
-                should_dispose = True
-            else:
-                self.disposable.append(item)
+        if self.is_disposed:
+            should_dispose = True
+        else:
+            self.disposable.append(item)
 
         if should_dispose:
             item.dispose()
@@ -42,10 +38,9 @@ class CompositeDisposable(Disposable):
             return
 
         should_dispose = False
-        with self.lock:
-            if item in self.disposable:
-                self.disposable.remove(item)
-                should_dispose = True
+        if item in self.disposable:
+            self.disposable.remove(item)
+            should_dispose = True
 
         if should_dispose:
             item.dispose()
@@ -59,10 +54,9 @@ class CompositeDisposable(Disposable):
         if self.is_disposed:
             return
 
-        with self.lock:
-            self.is_disposed = True
-            current_disposable = self.disposable
-            self.disposable = []
+        self.is_disposed = True
+        current_disposable = self.disposable
+        self.disposable = []
 
         for disp in current_disposable:
             disp.dispose()
@@ -72,9 +66,8 @@ class CompositeDisposable(Disposable):
         CompositeDisposable, but does not dispose the
         CompositeDisposable."""
 
-        with self.lock:
-            current_disposable = self.disposable
-            self.disposable = []
+        current_disposable = self.disposable
+        self.disposable = []
 
         for disposable in current_disposable:
             disposable.dispose()

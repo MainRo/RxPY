@@ -1,4 +1,3 @@
-from threading import RLock
 from typing import Optional
 
 from rx.core import typing
@@ -14,7 +13,6 @@ class SerialDisposable(Disposable):
     def __init__(self) -> None:
         self.current: Optional[Disposable] = None
         self.is_disposed = False
-        self.lock = RLock()
 
         super().__init__()
 
@@ -29,11 +27,10 @@ class SerialDisposable(Disposable):
 
         old: Optional[Disposable] = None
 
-        with self.lock:
-            should_dispose = self.is_disposed
-            if not should_dispose:
-                old = self.current
-                self.current = value
+        should_dispose = self.is_disposed
+        if not should_dispose:
+            old = self.current
+            self.current = value
 
         if old is not None:
             old.dispose()
@@ -49,11 +46,10 @@ class SerialDisposable(Disposable):
 
         old: Optional[Disposable] = None
 
-        with self.lock:
-            if not self.is_disposed:
-                self.is_disposed = True
-                old = self.current
-                self.current = None
+        if not self.is_disposed:
+            self.is_disposed = True
+            old = self.current
+            self.current = None
 
         if old is not None:
             old.dispose()

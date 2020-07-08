@@ -7,6 +7,7 @@ from .. import typing
 
 
 class AutoDetachObserver(typing.Observer):
+    __slots__ = ('_on_next', '_on_error', '_on_completed', '_subscription', 'is_stopped')
 
     def __init__(self,
                  on_next: Optional[typing.OnNext] = None,

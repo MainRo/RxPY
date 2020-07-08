@@ -28,10 +28,9 @@ def _take_last_buffer(count: int) -> Callable[[Observable], Observable]:
             q = []
 
             def on_next(x):
-                with source.lock:
-                    q.append(x)
-                    if len(q) > count:
-                        q.pop(0)
+                q.append(x)
+                if len(q) > count:
+                    q.pop(0)
 
             def on_completed():
                 observer.on_next(q)

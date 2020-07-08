@@ -1,4 +1,3 @@
-from threading import Lock
 from typing import Optional, MutableMapping
 from weakref import WeakKeyDictionary
 
@@ -16,17 +15,15 @@ class ImmediateScheduler(Scheduler):
     Attempts to do so will raise a :class:`WouldBlockException`.
     """
 
-    _lock = Lock()
     _global: MutableMapping[type, 'ImmediateScheduler'] = WeakKeyDictionary()
 
     @classmethod
     def singleton(cls) -> 'ImmediateScheduler':
-        with ImmediateScheduler._lock:
-            try:
-                self = ImmediateScheduler._global[cls]
-            except KeyError:
-                self = super().__new__(cls)
-                ImmediateScheduler._global[cls] = self
+        try:
+            self = ImmediateScheduler._global[cls]
+        except KeyError:
+            self = super().__new__(cls)
+            ImmediateScheduler._global[cls] = self
         return self
 
     def __new__(cls) -> 'ImmediateScheduler':

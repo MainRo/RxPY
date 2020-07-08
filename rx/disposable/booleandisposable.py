@@ -1,4 +1,3 @@
-from threading import RLock
 from rx.core.typing import Disposable
 
 
@@ -9,7 +8,6 @@ class BooleanDisposable(Disposable):
         """Initializes a new instance of the BooleanDisposable class."""
 
         self.is_disposed = False
-        self.lock = RLock()
 
         super().__init__()
 

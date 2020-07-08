@@ -36,16 +36,15 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
         def on_next(notification):
             should_run = False
 
-            with source.lock:
-                if notification.value.kind == 'E':
-                    del queue[:]
-                    queue.append(notification)
-                    exception[0] = notification.value.exception
-                    should_run = not running[0]
-                else:
-                    queue.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
-                    should_run = not active[0]
-                    active[0] = True
+            if notification.value.kind == 'E':
+                del queue[:]
+                queue.append(notification)
+                exception[0] = notification.value.exception
+                should_run = not running[0]
+            else:
+                queue.append(Timestamp(value=notification.value, timestamp=notification.timestamp + duetime))
+                should_run = not active[0]
+                active[0] = True
 
             if should_run:
                 if exception[0]:
@@ -58,31 +57,30 @@ def observable_delay_timespan(source: Observable, duetime: typing.RelativeTime,
                         if exception[0]:
                             return
 
-                        with source.lock:
-                            running[0] = True
-                            while True:
-                                result = None
-                                if queue and queue[0].timestamp <= scheduler.now:
-                                    result = queue.pop(0).value
+                        running[0] = True
+                        while True:
+                            result = None
+                            if queue and queue[0].timestamp <= scheduler.now:
+                                result = queue.pop(0).value
 
-                                if result:
-                                    result.accept(observer)
+                            if result:
+                                result.accept(observer)
 
-                                if not result:
-                                    break
+                            if not result:
+                                break
 
-                            should_continue = False
-                            recurse_duetime = 0
-                            if queue:
-                                should_continue = True
-                                diff = queue[0].timestamp - scheduler.now
-                                zero = DELTA_ZERO if isinstance(diff, timedelta) else 0
-                                recurse_duetime = max(zero, diff)
-                            else:
-                                active[0] = False
+                        should_continue = False
+                        recurse_duetime = 0
+                        if queue:
+                            should_continue = True
+                            diff = queue[0].timestamp - scheduler.now
+                            zero = DELTA_ZERO if isinstance(diff, timedelta) else 0
+                            recurse_duetime = max(zero, diff)
+                        else:
+                            active[0] = False
 
-                            ex = exception[0]
-                            running[0] = False
+                        ex = exception[0]
+                        running[0] = False
 
                         if ex:
                             observer.on_error(ex)

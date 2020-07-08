@@ -28,15 +28,14 @@ def _take_while(predicate: Predicate, inclusive: bool = False) -> Callable[[Obse
             def on_next(value):
                 nonlocal running
 
-                with source.lock:
-                    if not running:
-                        return
+                if not running:
+                    return
 
-                    try:
-                        running = predicate(value)
-                    except Exception as exn:
-                        observer.on_error(exn)
-                        return
+                try:
+                    running = predicate(value)
+                except Exception as exn:
+                    observer.on_error(exn)
+                    return
 
                 if running:
                     observer.on_next(value)
@@ -75,17 +74,16 @@ def _take_while_indexed(predicate: PredicateIndexed, inclusive: bool = False) ->
             def on_next(value: Any) -> None:
                 nonlocal running, i
 
-                with source.lock:
-                    if not running:
-                        return
+                if not running:
+                    return
 
-                    try:
-                        running = predicate(value, i)
-                    except Exception as exn:
-                        observer.on_error(exn)
-                        return
-                    else:
-                        i += 1
+                try:
+                    running = predicate(value, i)
+                except Exception as exn:
+                    observer.on_error(exn)
+                    return
+                else:
+                    i += 1
 
                 if running:
                     observer.on_next(value)

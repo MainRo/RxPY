@@ -43,7 +43,7 @@ def _merge(*sources: Observable,
                 subscription = SingleAssignmentDisposable()
                 group.add(subscription)
 
-                @synchronized(source.lock)
+                #@synchronized(source.lock)
                 def on_completed():
                     group.remove(subscription)
                     if queue:
@@ -54,9 +54,9 @@ def _merge(*sources: Observable,
                         if is_stopped[0] and active_count[0] == 0:
                             observer.on_completed()
 
-                on_next = synchronized(source.lock)(observer.on_next)
-                on_error = synchronized(source.lock)(observer.on_error)
-                subscription.disposable = xs.subscribe_(on_next, on_error, on_completed, scheduler)
+                #on_next = synchronized(source.lock)(observer.on_next)
+                #on_error = synchronized(source.lock)(observer.on_error)
+                subscription.disposable = xs.subscribe_(observer.on_next, observer.on_error, on_completed, scheduler)
 
             def on_next(inner_source):
                 if active_count[0] < max_concurrent:
@@ -102,18 +102,21 @@ def _merge_all() -> Callable[[Observable], Observable]:
 
                 inner_source = from_future(inner_source) if is_future(inner_source) else inner_source
 
-                @synchronized(source.lock)
+                #@synchronized(source.lock)
                 def on_completed():
+                    #print("completed")
                     group.remove(inner_subscription)
                     if is_stopped[0] and len(group) == 1:
                         observer.on_completed()
 
-                on_next = synchronized(source.lock)(observer.on_next)
-                on_error = synchronized(source.lock)(observer.on_error)
-                subscription = inner_source.subscribe_(on_next, on_error, on_completed, scheduler)
+                #on_next = synchronized(source.lock)(observer.on_next)
+                #on_error = synchronized(source.lock)(observer.on_error)
+                subscription = inner_source.subscribe_(observer.on_next, observer.on_error, on_completed, scheduler)
+                #print("subscribed")
                 inner_subscription.disposable = subscription
 
             def on_completed():
+                #print("completed2")
                 is_stopped[0] = True
                 if len(group) == 1:
                     observer.on_completed()

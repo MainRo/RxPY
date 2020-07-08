@@ -1,5 +1,6 @@
 from typing import Callable, Optional
 import logging
+from collections import deque
 
 from rx.core import Observable
 from rx.internal.utils import add_ref
@@ -42,7 +43,7 @@ def _window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Obse
             m = SingleAssignmentDisposable()
             refCountDisposable = RefCountDisposable(m)
             n = [0]
-            q = []
+            q = deque()
 
             def create_window():
                 s = Subject()
@@ -57,7 +58,7 @@ def _window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Obse
 
                 c = n[0] - count + 1
                 if c >= 0 and c % skip == 0:
-                    s = q.pop(0)
+                    s = q.popleft()
                     s.on_completed()
 
                 n[0] += 1
@@ -66,12 +67,12 @@ def _window_with_count(count: int, skip: Optional[int] = None) -> Callable[[Obse
 
             def on_error(exception):
                 while q:
-                    q.pop(0).on_error(exception)
+                    q.popleft().on_error(exception)
                 observer.on_error(exception)
 
             def on_completed():
                 while q:
-                    q.pop(0).on_completed()
+                    q.popleft().on_completed()
                 observer.on_completed()
 
             m.disposable = source.subscribe_(on_next, on_error, on_completed, scheduler)

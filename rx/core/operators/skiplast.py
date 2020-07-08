@@ -26,10 +26,9 @@ def _skip_last(count: int) -> Callable[[Observable], Observable]:
 
             def on_next(value):
                 front = None
-                with source.lock:
-                    q.append(value)
-                    if len(q) > count:
-                        front = q.pop(0)
+                q.append(value)
+                if len(q) > count:
+                    front = q.pop(0)
 
                 if front is not None:
                     observer.on_next(front)

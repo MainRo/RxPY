@@ -16,7 +16,7 @@ class SingleAssignmentDisposable(Disposable):
         """
         self.is_disposed = False
         self.current = None
-        self.lock = RLock()
+        #self.lock = RLock()
 
         super().__init__()
 
@@ -29,11 +29,11 @@ class SingleAssignmentDisposable(Disposable):
 
         old = None
 
-        with self.lock:
-            should_dispose = self.is_disposed
-            if not should_dispose:
-                old = self.current
-                self.current = value
+        #with self.lock:
+        should_dispose = self.is_disposed
+        if not should_dispose:
+            old = self.current
+            self.current = value
 
         if old:
             old.dispose()
@@ -47,11 +47,11 @@ class SingleAssignmentDisposable(Disposable):
         """Sets the status to disposed"""
         old = None
 
-        with self.lock:
-            if not self.is_disposed:
-                self.is_disposed = True
-                old = self.current
-                self.current = None
+        #with self.lock:
+        if not self.is_disposed:
+            self.is_disposed = True
+            old = self.current
+            self.current = None
 
         if old is not None:
             old.dispose()

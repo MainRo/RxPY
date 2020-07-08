@@ -1,4 +1,3 @@
-from threading import RLock
 from rx.core.typing import Disposable
 
 
@@ -13,7 +12,6 @@ class ScheduledDisposable(Disposable):
         self.scheduler = scheduler
         self.disposable = disposable
         self.is_disposed = False
-        self.lock = RLock()
 
         super().__init__()
 
@@ -27,10 +25,9 @@ class ScheduledDisposable(Disposable):
 
             should_dispose = False
 
-            with self.lock:
-                if not parent.is_disposed:
-                    parent.is_disposed = True
-                    should_dispose = True
+            if not parent.is_disposed:
+                parent.is_disposed = True
+                should_dispose = True
             if should_dispose:
                 parent.disposable.dispose()
 

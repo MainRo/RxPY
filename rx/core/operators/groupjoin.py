@@ -47,10 +47,9 @@ def _group_join(right: Observable,
             def on_next_left(value):
                 subject = Subject()
 
-                with left.lock:
-                    _id = left_id[0]
-                    left_id[0] += 1
-                    left_map[_id] = subject
+                _id = left_id[0]
+                left_id[0] += 1
+                left_map[_id] = subject
 
                 try:
                     result = (value, add_ref(subject, rcd))
@@ -103,10 +102,9 @@ def _group_join(right: Observable,
             group.add(left.subscribe_(on_next_left, on_error_left, observer.on_completed, scheduler))
 
             def send_right(value):
-                with left.lock:
-                    _id = right_id[0]
-                    right_id[0] += 1
-                    right_map[_id] = value
+                _id = right_id[0]
+                right_id[0] += 1
+                right_map[_id] = value
 
                 md = SingleAssignmentDisposable()
                 group.add(md)
@@ -125,17 +123,15 @@ def _group_join(right: Observable,
                     return
 
                 def on_error(error):
-                    with left.lock:
-                        for left_value in left_map.values():
-                            left_value.on_error(error)
+                    for left_value in left_map.values():
+                        left_value.on_error(error)
 
-                        observer.on_error(error)
+                    observer.on_error(error)
 
                 md.disposable = duration.pipe(ops.take(1)).subscribe_(nothing, on_error, expire, scheduler)
 
-                with left.lock:
-                    for left_value in left_map.values():
-                        left_value.on_next(value)
+                for left_value in left_map.values():
+                    left_value.on_next(value)
 
             def on_error_right(error):
                 for left_value in left_map.values():

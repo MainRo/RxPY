@@ -33,20 +33,17 @@ def _amb(right_source: Observable):
                     left_subscription.dispose()
 
             def on_next_left(value):
-                with left_source.lock:
-                    choice_left()
+                choice_left()
                 if choice[0] == left_choice:
                     observer.on_next(value)
 
             def on_error_left(err):
-                with left_source.lock:
-                    choice_left()
+                choice_left()
                 if choice[0] == left_choice:
                     observer.on_error(err)
 
             def on_completed_left():
-                with left_source.lock:
-                    choice_left()
+                choice_left()
                 if choice[0] == left_choice:
                     observer.on_completed()
 
@@ -54,20 +51,17 @@ def _amb(right_source: Observable):
             left_subscription.disposable = left_d
 
             def send_right(value: Any) -> None:
-                with left_source.lock:
-                    choice_right()
+                choice_right()
                 if choice[0] == right_choice:
                     observer.on_next(value)
 
             def on_error_right(err: Exception) -> None:
-                with left_source.lock:
-                    choice_right()
+                choice_right()
                 if choice[0] == right_choice:
                     observer.on_error(err)
 
             def on_completed_right() -> None:
-                with left_source.lock:
-                    choice_right()
+                choice_right()
                 if choice[0] == right_choice:
                     observer.on_completed()
 

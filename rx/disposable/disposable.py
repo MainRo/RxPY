@@ -24,7 +24,7 @@ class Disposable(typing.Disposable):
         self.is_disposed = False
         self.action = action or noop
 
-        self.lock = RLock()
+        #self.lock = RLock()
 
         super().__init__()
 
@@ -32,10 +32,10 @@ class Disposable(typing.Disposable):
         """Performs the task of cleaning up resources."""
 
         dispose = False
-        with self.lock:
-            if not self.is_disposed:
-                dispose = True
-                self.is_disposed = True
+        #with self.lock:
+        if not self.is_disposed:
+            dispose = True
+            self.is_disposed = True
 
         if dispose:
             self.action()

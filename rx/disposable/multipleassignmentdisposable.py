@@ -1,4 +1,3 @@
-from threading import RLock
 from rx.core.typing import Disposable
 
 
@@ -9,7 +8,6 @@ class MultipleAssignmentDisposable(Disposable):
     def __init__(self):
         self.current = None
         self.is_disposed = False
-        self.lock = RLock()
 
         super().__init__()
 
@@ -21,10 +19,9 @@ class MultipleAssignmentDisposable(Disposable):
         disposed, assignment to this property causes immediate disposal
         of the given disposable object."""
 
-        with self.lock:
-            should_dispose = self.is_disposed
-            if not should_dispose:
-                self.current = value
+        should_dispose = self.is_disposed
+        if not should_dispose:
+            self.current = value
 
         if should_dispose and value is not None:
             value.dispose()
@@ -37,11 +34,10 @@ class MultipleAssignmentDisposable(Disposable):
 
         old = None
 
-        with self.lock:
-            if not self.is_disposed:
-                self.is_disposed = True
-                old = self.current
-                self.current = None
+        if not self.is_disposed:
+            self.is_disposed = True
+            old = self.current
+            self.current = None
 
         if old is not None:
             old.dispose()

@@ -52,13 +52,11 @@ def _combine_latest(*sources: Observable) -> Observable:
             subscriptions[i] = SingleAssignmentDisposable()
 
             def on_next(x):
-                with parent.lock:
-                    values[i] = x
-                    _next(i)
+                values[i] = x
+                _next(i)
 
             def on_completed():
-                with parent.lock:
-                    done(i)
+                done(i)
 
             subscriptions[i].disposable = sources[i].subscribe_(on_next, observer.on_error, on_completed, scheduler)
 

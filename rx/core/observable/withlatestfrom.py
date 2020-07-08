@@ -16,18 +16,16 @@ def _with_latest_from(parent: Observable, *sources: Observable) -> Observable:
                 subscription = SingleAssignmentDisposable()
 
                 def on_next(value):
-                    with parent.lock:
-                        values[i] = value
+                    values[i] = value
                 subscription.disposable = child.subscribe_(on_next, observer.on_error, scheduler=scheduler)
                 return subscription
 
             parent_subscription = SingleAssignmentDisposable()
 
             def on_next(value):
-                with parent.lock:
-                    if NO_VALUE not in values:
-                        result = (value,) + tuple(values)
-                        observer.on_next(result)
+                if NO_VALUE not in values:
+                    result = (value,) + tuple(values)
+                    observer.on_next(result)
 
             disp = parent.subscribe_(on_next, observer.on_error, observer.on_completed, scheduler)
             parent_subscription.disposable = disp

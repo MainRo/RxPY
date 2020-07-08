@@ -26,13 +26,12 @@ def _pairwise() -> Callable[[Observable], Observable]:
             def on_next(x):
                 pair = None
 
-                with source.lock:
-                    if has_previous[0]:
-                        pair = (previous[0], x)
-                    else:
-                        has_previous[0] = True
+                if has_previous[0]:
+                    pair = (previous[0], x)
+                else:
+                    has_previous[0] = True
 
-                    previous[0] = x
+                previous[0] = x
 
                 if pair:
                     observer.on_next(pair)
