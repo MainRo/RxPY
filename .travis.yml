@@ -3,40 +3,40 @@ matrix:
 
     - name: "Python 3.6 on Linux"
       os: linux
-      dist: xenial
+      dist: focal
       language: python
       python: 3.6
       service:
         - xvfb
       script:
-        - xvfb-run -a python3 setup.py test
+        - xvfb-run -a pytest
 
 
     - name: "Python 3.7 on Linux"
       os: linux
-      dist: xenial
+      dist: focal
       language: python
       python: 3.7
       service:
         - xvfb
       script:
-        - xvfb-run -a python3 setup.py test
+        - xvfb-run -a pytest
 
 
     - name: "Python 3.8 on Linux"
       os: linux
-      dist: xenial
+      dist: focal
       language: python
       python: 3.8
       service:
         - xvfb
       script:
-        - xvfb-run -a python3 setup.py test
+        - xvfb-run -a pytest
 
 
     - name: "Python 3.8 on Linux, with optional dependencies and benchmark"
       os: linux
-      dist: xenial
+      dist: focal
       language: python
       python: 3.8
       service:
@@ -45,13 +45,13 @@ matrix:
         # Native libraries for pycairo / pygobject
         - sudo apt-get install -y libgirepository1.0-dev gir1.2-gtk-3.0
         # Pre-built wheel for wxpython
-        - pip3 install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-16.04 wxpython
+        - pip3 install -U wxpython
         # Install the various optional packages
         - pip3 install eventlet gevent pycairo pygobject pygame==2.0dev10 pyqt5 pyside2 tornado twisted
         # Coverage will be reported for the Python 3.7 Linux build
         - pip3 install coveralls
       script:
-        - xvfb-run -a coverage run --source=rx setup.py test && coveralls
+        - xvfb-run -a coverage run --source=rx -m pytest && coveralls
 
 # Disable MacOS build temporarily, it's failing often on timing assertions
 #    - name: "Python 3.7 on MacOS, with optional dependencies and benchmark"
@@ -79,7 +79,7 @@ matrix:
         # TODO install pycairo and pygobject somehow?
 
 script:
-  - python3 setup.py test
+  - pytest
 
 after_success:
   # Run a crude benchmark (unit tests minus test_scheduler) a couple of times.
