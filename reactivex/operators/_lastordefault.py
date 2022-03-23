@@ -4,6 +4,8 @@ from reactivex import Observable, abc
 from reactivex import operators as ops
 from reactivex import typing
 from reactivex.internal.exceptions import SequenceContainsNoElementsError
+from reactivex.state import STATE_NOTSET, MemoryStateStore
+
 
 _T = TypeVar("_T")
 
@@ -16,23 +18,31 @@ def last_or_default_async(
     def subscribe(
         observer: abc.ObserverBase[Optional[_T]],
         scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ):
-        value = [default_value]
-        seen_value = [False]
+        state_store = state_store or MemoryStateStore()     
+        
+        value = state_store.create_state(state_store.next_unique_id("last_or_default_async"))        
+        value.create_key(0)
+        if has_default:
+            value.set(0, default_value)
 
-        def on_next(x: _T) -> None:
-            value[0] = x
-            seen_value[0] = True
+        def on_next(x: _T) -> None:            
+            value.set(0, x)
 
         def on_completed():
-            if not seen_value[0] and not has_default:
+            v = value.get(0)
+            if v is STATE_NOTSET and not has_default:
                 observer.on_error(SequenceContainsNoElementsError())
             else:
-                observer.on_next(value[0])
+                observer.on_next(v)
                 observer.on_completed()
 
+            state_store.delete_state(state_store)
+
         return source.subscribe(
-            on_next, observer.on_error, on_completed, scheduler=scheduler
+            on_next, observer.on_error, on_completed,
+            scheduler=scheduler, state_store=state_store
         )
 
     return Observable(subscribe)

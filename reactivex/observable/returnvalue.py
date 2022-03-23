@@ -26,7 +26,8 @@ def return_value_(
     """
 
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
 
@@ -43,7 +44,8 @@ def from_callable_(
     supplier: Callable[[], _T], scheduler: Optional[abc.SchedulerBase] = None
 ) -> Observable[_T]:
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
 

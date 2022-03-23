@@ -24,8 +24,9 @@ class ConnectableObservable(Observable[_T]):
         self,
         observer: abc.ObserverBase[_T],
         scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
-        return self.subject.subscribe(observer, scheduler=scheduler)
+        return self.subject.subscribe(observer, scheduler=scheduler, state_store=state_store)
 
     def connect(
         self, scheduler: Optional[abc.SchedulerBase] = None

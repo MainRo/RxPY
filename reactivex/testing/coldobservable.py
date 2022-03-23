@@ -24,6 +24,7 @@ class ColdObservable(Observable[_T]):
         self,
         observer: Optional[abc.ObserverBase[_T]] = None,
         scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
         self.subscriptions.append(Subscription(self.scheduler.clock))
         index = len(self.subscriptions) - 1

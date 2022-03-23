@@ -39,7 +39,7 @@ class TestSelect(unittest.TestCase):
                 lambda x: x, lambda ex: ex, lambda: _raise("ex")
             )
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(observer, scheduler=None, state_store=None):
             _raise("ex")
 
         with self.assertRaises(RxException):

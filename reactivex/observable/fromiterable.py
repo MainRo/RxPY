@@ -25,7 +25,8 @@ def from_iterable_(
     """
 
     def subscribe(
-        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[_T], scheduler_: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
         _scheduler = scheduler or scheduler_ or CurrentThreadScheduler.singleton()
         iterator = iter(iterable)

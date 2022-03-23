@@ -15,6 +15,7 @@ def first_or_default_async_(
         def subscribe(
             observer: abc.ObserverBase[_T],
             scheduler: Optional[abc.SchedulerBase] = None,
+            state_store: Optional[abc.StateStoreBase] = None,
         ):
             def on_next(x: _T):
                 observer.on_next(x)
@@ -28,7 +29,8 @@ def first_or_default_async_(
                     observer.on_completed()
 
             return source.subscribe(
-                on_next, observer.on_error, on_completed, scheduler=scheduler
+                on_next, observer.on_error, on_completed,
+                scheduler=scheduler, state_store=state_store
             )
 
         return Observable(subscribe)

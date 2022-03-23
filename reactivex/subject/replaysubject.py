@@ -62,6 +62,7 @@ class ReplaySubject(Subject[_T]):
         self,
         observer: abc.ObserverBase[_T],
         scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
         so = ScheduledObserver(self.scheduler, observer)
         subscription = RemovableDisposable(self, so)

@@ -66,6 +66,7 @@ def group_by_until_(
         def subscribe(
             observer: abc.ObserverBase[GroupedObservable[_TKey, _TValue]],
             scheduler: Optional[abc.SchedulerBase] = None,
+            state_store: Optional[abc.StateStoreBase] = None,
         ) -> abc.DisposableBase:
             writers: OrderedDict[_TKey, Subject[_TValue]] = OrderedDict()
             group_disposable = CompositeDisposable()
@@ -138,7 +139,8 @@ def group_by_until_(
                         expire()
 
                     sad.disposable = duration.pipe(ops.take(1)).subscribe(
-                        on_next, on_error, on_completed, scheduler=scheduler
+                        on_next, on_error, on_completed,
+                        scheduler=scheduler, state_store=state_store
                     )
 
                 try:
@@ -165,7 +167,10 @@ def group_by_until_(
                 observer.on_completed()
 
             group_disposable.add(
-                source.subscribe(on_next, on_error, on_completed, scheduler=scheduler)
+                source.subscribe(
+                    on_next, on_error, on_completed,
+                    scheduler=scheduler, state_store=state_store
+                )
             )
             return ref_count_disposable
 

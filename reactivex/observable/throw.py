@@ -10,7 +10,9 @@ def throw_(
     exception_ = exception if isinstance(exception, Exception) else Exception(exception)
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any],
+        scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
         _scheduler = scheduler or ImmediateScheduler.singleton()
 

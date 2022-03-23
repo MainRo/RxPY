@@ -25,7 +25,8 @@ def filter_(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_
         """
 
         def subscribe(
-            observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase]
+            observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase],
+            state_store: Optional[abc.StateStoreBase],
         ) -> abc.DisposableBase:
             def on_next(value: _T):
                 try:
@@ -38,7 +39,8 @@ def filter_(predicate: Predicate[_T]) -> Callable[[Observable[_T]], Observable[_
                     observer.on_next(value)
 
             return source.subscribe(
-                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
+                on_next, observer.on_error, observer.on_completed,
+                scheduler=scheduler, state_store=state_store
             )
 
         return Observable(subscribe)
@@ -66,7 +68,8 @@ def filter_indexed_(
         """
 
         def subscribe(
-            observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase]
+            observer: abc.ObserverBase[_T], scheduler: Optional[abc.SchedulerBase],
+            state_store: Optional[abc.StateStoreBase],
         ):
             count = 0
 
@@ -87,7 +90,8 @@ def filter_indexed_(
                     observer.on_next(value)
 
             return source.subscribe(
-                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
+                on_next, observer.on_error, observer.on_completed,
+                scheduler=scheduler, state_store=state_store
             )
 
         return Observable(subscribe)

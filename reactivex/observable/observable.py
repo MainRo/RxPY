@@ -45,8 +45,9 @@ class Observable(abc.ObservableBase[_T]):
         self,
         observer: abc.ObserverBase[_T],
         scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
-        return self._subscribe(observer, scheduler) if self._subscribe else Disposable()
+        return self._subscribe(observer, scheduler, state_store) if self._subscribe else Disposable()
 
     def subscribe(
         self,
@@ -55,6 +56,7 @@ class Observable(abc.ObservableBase[_T]):
         on_completed: Optional[abc.OnCompleted] = None,
         *,
         scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[StateStoreBase] = None,
     ) -> abc.DisposableBase:
         """Subscribe an observer to the observable sequence.
 
@@ -120,7 +122,7 @@ class Observable(abc.ObservableBase[_T]):
             _: Optional[abc.SchedulerBase] = None, __: Any = None
         ) -> None:
             try:
-                subscriber = self._subscribe_core(auto_detach_observer, scheduler)
+                subscriber = self._subscribe_core(auto_detach_observer, scheduler, state_store)
             except Exception as ex:  # By design. pylint: disable=W0703
                 if not auto_detach_observer.fail(ex):
                     raise

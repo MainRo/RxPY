@@ -57,6 +57,7 @@ def zip_with_iterable_(
         def subscribe(
             observer: abc.ObserverBase[Tuple[_T, _TOther]],
             scheduler: Optional[abc.SchedulerBase] = None,
+            state_store: Optional[abc.StateStoreBase] = None,
         ):
             index = 0
 
@@ -72,7 +73,8 @@ def zip_with_iterable_(
                     observer.on_next(result)
 
             return first.subscribe(
-                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
+                on_next, observer.on_error, observer.on_completed,
+                scheduler=scheduler, state_store=state_store
             )
 
         return Observable(subscribe)

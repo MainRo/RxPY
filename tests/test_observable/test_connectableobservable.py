@@ -25,7 +25,7 @@ class MySubject(Observable, ObserverBase):
         self.subscribe_count = 0
         self.disposed = False
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(self, observer, scheduler=None, state_store=None):
         self.subscribe_count += 1
         self.observer = observer
 
@@ -256,7 +256,7 @@ class TestConnectableObservable(unittest.TestCase):
         scheduler = TestScheduler()
         subscribe_scheduler = "unknown"
 
-        def subscribe(observer, scheduler=None):
+        def subscribe(observer, scheduler=None, state_store=None):
             nonlocal subscribe_scheduler
             subscribe_scheduler = scheduler
 

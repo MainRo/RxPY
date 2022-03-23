@@ -36,7 +36,8 @@ def map_(
         """
 
         def subscribe(
-            obv: abc.ObserverBase[_T2], scheduler: Optional[abc.SchedulerBase] = None
+            obv: abc.ObserverBase[_T2], scheduler: Optional[abc.SchedulerBase] = None,
+            state_store: Optional[abc.StateStoreBase] = None,
         ) -> abc.DisposableBase:
             def on_next(value: _T1) -> None:
                 try:
@@ -47,7 +48,8 @@ def map_(
                     obv.on_next(result)
 
             return source.subscribe(
-                on_next, obv.on_error, obv.on_completed, scheduler=scheduler
+                on_next, obv.on_error, obv.on_completed,
+                scheduler=scheduler, state_store=state_store
             )
 
         return Observable(subscribe)

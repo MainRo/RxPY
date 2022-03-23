@@ -4,6 +4,7 @@ from .observer import ObserverBase, OnCompleted, OnError, OnNext
 from .periodicscheduler import PeriodicSchedulerBase
 from .scheduler import ScheduledAction, SchedulerBase
 from .startable import StartableBase
+from .statestore import StateStoreBase, StateBase
 from .subject import SubjectBase
 
 __all__ = [
@@ -19,4 +20,6 @@ __all__ = [
     "Subscription",
     "ScheduledAction",
     "StartableBase",
+    "StateStoreBase",
+    "StateBase",
 ]

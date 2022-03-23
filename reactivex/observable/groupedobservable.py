@@ -22,10 +22,11 @@ class GroupedObservable(Generic[_TKey, _T], Observable[_T]):
         def subscribe(
             observer: abc.ObserverBase[_T],
             scheduler: Optional[abc.SchedulerBase] = None,
+            state_store: Optional[abc.StateStoreBase] = None,
         ) -> abc.DisposableBase:
             return CompositeDisposable(
                 merged_disposable.disposable if merged_disposable else Disposable(),
-                underlying_observable.subscribe(observer, scheduler=scheduler),
+                underlying_observable.subscribe(observer, scheduler=scheduler, state_store=state_store),
             )
 
         self.underlying_observable = (
@@ -36,5 +37,6 @@ class GroupedObservable(Generic[_TKey, _T], Observable[_T]):
         self,
         observer: abc.ObserverBase[_T],
         scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
-        return self.underlying_observable.subscribe(observer, scheduler=scheduler)
+        return self.underlying_observable.subscribe(observer, scheduler=scheduler, state_store=state_store)

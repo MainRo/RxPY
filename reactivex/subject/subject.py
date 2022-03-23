@@ -34,6 +34,7 @@ class Subject(Observable[_T], Observer[_T], abc.SubjectBase[_T]):
         self,
         observer: abc.ObserverBase[_T],
         scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
         with self.lock:
             self.check_disposed()

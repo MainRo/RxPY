@@ -27,7 +27,8 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
     sources = list(args)
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> CompositeDisposable:
         n = len(sources)
         queues: List[List[Any]] = [[] for _ in range(n)]
@@ -76,7 +77,9 @@ def zip_(*args: Observable[Any]) -> Observable[Tuple[Any, ...]]:
                 next_(i)
 
             sad.disposable = source.subscribe(
-                on_next, observer.on_error, lambda: completed(i), scheduler=scheduler
+                on_next, observer.on_error, lambda: completed(i),
+                scheduler=scheduler, state_store=state_store
+
             )
             subscriptions[i] = sad
 

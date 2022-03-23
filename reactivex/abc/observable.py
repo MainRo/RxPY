@@ -4,6 +4,7 @@ from typing import Callable, Generic, Optional, TypeVar, Union
 from .disposable import DisposableBase
 from .observer import ObserverBase, OnCompleted, OnError, OnNext
 from .scheduler import SchedulerBase
+from .statestore import StateStoreBase
 
 _T_out = TypeVar("_T_out", covariant=True)
 
@@ -23,6 +24,7 @@ class ObservableBase(Generic[_T_out], ABC):
         on_completed: Optional[OnCompleted] = None,
         *,
         scheduler: Optional[SchedulerBase] = None,
+        state_store: Optional[StateStoreBase] = None,
     ) -> DisposableBase:
         """Subscribe an observer to the observable sequence.
 
@@ -40,6 +42,6 @@ class ObservableBase(Generic[_T_out], ABC):
         raise NotImplementedError
 
 
-Subscription = Callable[[ObserverBase[_T_out], Optional[SchedulerBase]], DisposableBase]
+Subscription = Callable[[ObserverBase[_T_out], Optional[SchedulerBase], Optional[StateStoreBase]], DisposableBase]
 
 __all__ = ["ObservableBase", "Subscription"]

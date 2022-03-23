@@ -13,7 +13,8 @@ def never_() -> Observable[Any]:
     """
 
     def subscribe(
-        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None
+        observer: abc.ObserverBase[Any], scheduler: Optional[abc.SchedulerBase] = None,
+        state_store: Optional[abc.StateStoreBase] = None,
     ) -> abc.DisposableBase:
         return Disposable()
 

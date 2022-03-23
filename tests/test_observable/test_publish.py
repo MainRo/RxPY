@@ -33,7 +33,7 @@ class MySubject(Observable, ObserverBase):
         self.disposed = False
         self.observer = None
 
-    def _subscribe_core(self, observer, scheduler=None):
+    def _subscribe_core(self, observer, scheduler=None, state_store=None):
         self.subscribe_count += 1
         self.observer = observer
 

@@ -29,6 +29,7 @@ def take_(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
         def subscribe(
             observer: abc.ObserverBase[_T],
             scheduler: Optional[abc.SchedulerBase] = None,
+            state_store: Optional[abc.StateStoreBase] = None,
         ):
             remaining = count
 
@@ -42,7 +43,8 @@ def take_(count: int) -> Callable[[Observable[_T]], Observable[_T]]:
                         observer.on_completed()
 
             return source.subscribe(
-                on_next, observer.on_error, observer.on_completed, scheduler=scheduler
+                on_next, observer.on_error, observer.on_completed,
+                scheduler=scheduler, state_store=state_store
             )
 
         return Observable(subscribe)
